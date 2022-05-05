@@ -4,7 +4,7 @@ Tool to help your Wordle games. Type in your word attempts and change the colour
 You can use this app by running the following in R.
 
 ```
-runGitHub( "wordle_assist", "kevinchtsang")
+shiny::runGitHub( "wordle_assist", "kevinchtsang")
 ```
 
 ![Example](/wordle_assist_example1.png?raw=true)

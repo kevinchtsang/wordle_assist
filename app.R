@@ -2,6 +2,11 @@
 # shiny app for helping with wordle
 #
 
+# load packages
+list.of.packages <- c("shiny", "shinyjs", "DT")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
 library(shiny)
 library(shinyjs)
 library(DT)
