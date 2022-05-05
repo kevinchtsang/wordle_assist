@@ -55,7 +55,7 @@ ui <- fluidPage(
     useShinyjs(),
     
     # Application title
-    titlePanel("Wordle Assist"),
+    titlePanel("Wordle Assistant"),
 
     sidebarLayout(
         sidebarPanel(
@@ -84,7 +84,9 @@ ui <- fluidPage(
             h1("Possible words in our dictionary"),
             textOutput("text")
         )
-    )
+    ),
+
+    uiOutput("footer")
 )
 
 server <- function(input, output, session) {
@@ -270,6 +272,12 @@ server <- function(input, output, session) {
                       collapse = ", ")
                 })
         }
+    })
+    
+    # footer
+    url <- a("/kevinchtsang", href="https://github.com/kevinchtsang/wordle_assist")
+    output$footer <- renderUI({
+      tagList("Developed by ", url)
     })
     
 }
