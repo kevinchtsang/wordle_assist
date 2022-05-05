@@ -46,6 +46,9 @@ ui <- fluidPage(
       .shiny-input-container {
         color: #474747;
       }
+      hr {
+        border-top: 1px solid #000000;
+      }
       table, th, td {
         background-clip: padding-box;
         font-family: 'Yusei Magic', sans-serif;
@@ -80,18 +83,26 @@ ui <- fluidPage(
                           "6th word:")
             ),
             actionButton("resetWords", "Reset words"),
-            actionButton("resetPositions", "Reset colours")
+            actionButton("resetPositions", "Reset colours"),
+            br(),
+            br(),
+            hr(),
+            br(),
+            uiOutput("footer")
         ),
 
         mainPanel(
-            h1("Type in your wordle attempt and match the colours"),
+            h1("Type in your wordle attempt and click to match the colours"),
             DTOutput("wordleGrid", height = "40em"),
             h1("Possible words in our dictionary"),
-            textOutput("text")
+            textOutput("text"),
+            br(),
+            br(),
+            br()
         )
-    ),
+    )
 
-    uiOutput("footer")
+    # uiOutput("footer")
 )
 
 server <- function(input, output, session) {
@@ -269,11 +280,19 @@ server <- function(input, output, session) {
             }
             print(word_list)
             print(position_list)
-
-
+            
+            # search dictionary
+            an.error.occured <- FALSE
+            possible_words <- NULL
+            tryCatch({
+              possible_words <- wordle_help_multi(
+                tolower(word_list),
+                position_list)
+              }, error = function(e) {an.error.occured <<- TRUE}
+              )
+            if(an.error.occured)print("error: no word found")
             output$text <- renderText({
-                paste(wordle_help_multi(tolower(word_list),
-                                        position_list),
+                paste(possible_words,
                       collapse = ", ")
                 })
         }
