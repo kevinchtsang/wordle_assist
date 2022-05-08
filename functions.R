@@ -46,6 +46,10 @@ five_solver <- function(word_str, match_n = 5, not_letters = "", words_full_df =
                            nrow = nrow(words_full_df),
                            byrow = TRUE) &
     as.matrix(words_full_df[,letters])
+  
+  # adjust match_n for duplicates
+  match_n <- min(match_n, sum(letters_used))
+  
   overlap_words <- apply(overlap_matrix, 1, sum) >= match_n
   
   remaining_df <- words_full_df[overlap_words,]
@@ -79,13 +83,23 @@ wordle_help <- function(word_str, match_pattern = "00000", not_letters = "", wor
   }
   word_vec <- unlist(str_extract_all(word_str, ""))
   
+  any_duplicate <- FALSE
+  if (length(unique(word_vec)) != length(word_vec)){
+    any_duplicate <- TRUE
+  }
+  
   grey <- pattern_vec == 0
   yellow <- pattern_vec == 1
   green <- pattern_vec == 2
   
-  possible_words <- five_solver(paste(word_vec[!grey],collapse = ""), 
+  # handle repeated letters
+  yes_letters <- word_vec[!grey]
+  all_not_letters <- c(word_vec[grey],not_letters)
+  all_not_letters <- all_not_letters[!all_not_letters %in% yes_letters]
+  
+  possible_words <- five_solver(paste(yes_letters,collapse = ""), 
                                 sum(!grey),
-                                paste(c(word_vec[grey],not_letters),collapse = ""),
+                                paste(all_not_letters,collapse = ""),
                                 words_full_df = words_full_df)
   
   # match pattern
@@ -120,6 +134,26 @@ wordle_help <- function(word_str, match_pattern = "00000", not_letters = "", wor
       
       possible_words_matrix <- possible_words_matrix[!yellow_check_vec,]
     }
+  }
+  # grey second check if there are duplicated letters
+  if (any_duplicate){
+    if (length(possible_words_matrix) == 5){
+      grey_matrix <- word_vec[grey]
+      grey_check_matrix <- possible_words_matrix[grey] == grey_matrix
+      grey_check_vec <- any(yellow_check_matrix)
+      
+      possible_words_matrix <- possible_words_matrix[!grey_check_vec]
+    } else {
+      grey_matrix <- matrix(unlist(rep(word_vec[grey], nrow(possible_words_matrix))),
+                            nrow = nrow(possible_words_matrix),
+                            byrow = TRUE)
+      
+      grey_check_matrix <- possible_words_matrix[,grey] != grey_matrix
+      grey_check_vec <- apply(grey_check_matrix,1,all)
+      
+      possible_words_matrix <- possible_words_matrix[grey_check_vec,]
+    }
+    
   }
   
   # output
