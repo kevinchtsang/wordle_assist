@@ -1,7 +1,9 @@
 # Wordle Assistant
 Tool to help your Wordle games. Type in your word attempts and change the colours to match (grey - no match, yellow - in word, green - correct position) by clicking on the tiles.
 
-You can use this app by running the following in R.
+You can use this app on your browser by [clicking here](https://hx2j2u-kevin-tsang.shinyapps.io/wordle_assist/).
+
+You can also use this app locally by running the following in R.
 
 ```
 shiny::runGitHub("wordle_assist", "kevinchtsang")
